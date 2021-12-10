@@ -1,3 +1,5 @@
+# https://adventofcode.com/2021/day/3
+
 def _parse_input_to_rows(input_filename: str) -> list:
     rows = []
     with open(input_filename, "r") as file_in:
