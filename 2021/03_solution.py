@@ -1,33 +1,39 @@
-def _parse_input_to_columns(input_filename: str) -> list:
-    columns = []
+def _parse_input_to_rows(input_filename: str) -> list:
+    rows = []
     with open(input_filename, "r") as file_in:
-        for line in file_in:
-            for bn, bit in enumerate(line):
+        for ln, line in enumerate(file_in):
+            try:
+                rows[ln]
+            except IndexError:
+                rows.append([])
+            for bit in line:
                 if bit == '\n':
                     continue
+                rows[ln].append(int(bit))
 
-                try:
-                    columns[bn]
-                except IndexError:
-                    columns.append([])
+    return rows
 
-                columns[bn].append(int(bit))
 
-    return columns
-
-def one(columns: list) -> int:
-    sums = []
-    for bit in columns:
-        sums.append(sum(bit))
-
+def one(numbers: list) -> int:
     gamma_rate_bits = []
     epsilon_rate_bits = []
-    column_length = len(columns[0])
+    row_len = len(numbers[0])
+    col_len = len(numbers)
+
+    sums = []
+    for bit_num in range(row_len):
+        for number in numbers:
+            try:
+                sums[bit_num]
+            except IndexError:
+                sums.append(0)
+            sums[bit_num] = sums[bit_num] + number[bit_num]
+
     for _sum in sums:
-        if _sum > column_length/2:
+        if _sum > col_len/2:  # more 1 bits
             gamma_rate_bits.append('1')
             epsilon_rate_bits.append('0')
-        else:
+        else:  # more 0 bits
             gamma_rate_bits.append('0')
             epsilon_rate_bits.append('1')
 
@@ -36,11 +42,14 @@ def one(columns: list) -> int:
 
     return gamma_rate * epsilon_rate
 
+
 def two(columns: list) -> int:
     pass
 
 
 if __name__ == "__main__":
-    columns = _parse_input_to_columns("03_input.txt")
+    rows = _parse_input_to_rows("03_example.txt")
+    print(f"rows: {rows}")
+
     for part in [one, two]:
-        print(f"Part {part.__name__}: {part(columns)}")
+        print(f"Part {part.__name__}: {part(rows)}")
