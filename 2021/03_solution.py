@@ -44,33 +44,21 @@ def calculate_rating(numbers: list, bit: int) -> int:
 
     return int(''.join(str(i) for i in numbers[0]), 2)
 
+
+# it is is still O(n2)
 def one(numbers: list) -> int:
     gamma_rate_bits = []
     epsilon_rate_bits = []
-    row_len = len(numbers[0])
-    col_len = len(numbers)
 
-    sums = []
-    for bit_num in range(row_len):
-        for number in numbers:
-            try:
-                sums[bit_num]
-            except IndexError:
-                sums.append(0)
-            sums[bit_num] = sums[bit_num] + number[bit_num]
-
-    for _sum in sums:
-        if _sum > col_len/2:  # more 1 bits
+    for col_num in range(len(numbers[0])):
+        if get_sum_in_position(numbers, col_num) >= len(numbers)/2:
             gamma_rate_bits.append('1')
             epsilon_rate_bits.append('0')
-        else:  # more 0 bits
+        else:
             gamma_rate_bits.append('0')
             epsilon_rate_bits.append('1')
 
-    gamma_rate = int(''.join(gamma_rate_bits), 2)
-    epsilon_rate = int(''.join(epsilon_rate_bits), 2)
-
-    return gamma_rate * epsilon_rate
+    return int(''.join(gamma_rate_bits), 2) * int(''.join(epsilon_rate_bits), 2)
 
 
 def two(numbers: list) -> int:
