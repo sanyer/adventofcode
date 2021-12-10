@@ -35,7 +35,8 @@ def one(columns: list) -> int:
     epsilon_rate = int(''.join(epsilon_rate_bits), 2)
 
     return gamma_rate * epsilon_rate
-def two(columns: list, rows: list) -> int:
+
+def two(columns: list) -> int:
     pass
 
 
