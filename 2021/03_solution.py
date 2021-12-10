@@ -10,9 +10,39 @@ def _parse_input_to_rows(input_filename: str) -> list:
                 if bit == '\n':
                     continue
                 rows[ln].append(int(bit))
-
     return rows
 
+
+def filter_numbers(numbers: list, position: int, bit: int) -> list:
+    if not type(numbers[0]) == list:
+        return numbers
+
+    filtered = []
+    for number in numbers:
+        if number[position] == bit:
+            filtered.append(number)
+
+    return filtered
+
+
+def get_sum_in_position(numbers: list, position: int) -> int:
+    sum = 0
+    for number in numbers:
+        sum = sum + number[position]
+    return sum
+
+
+def calculate_rating(numbers: list, bit: int) -> int:
+    col_num = 0
+    while len(numbers) > 1:
+        oxygen_generator_sum = get_sum_in_position(numbers, col_num)
+        if oxygen_generator_sum >= len(numbers)/2:
+            numbers = filter_numbers(numbers, col_num, abs(bit))
+        else:
+            numbers = filter_numbers(numbers, col_num, abs(bit - 1))
+        col_num = col_num + 1
+
+    return int(''.join(str(i) for i in numbers[0]), 2)
 
 def one(numbers: list) -> int:
     gamma_rate_bits = []
@@ -43,13 +73,12 @@ def one(numbers: list) -> int:
     return gamma_rate * epsilon_rate
 
 
-def two(columns: list) -> int:
-    pass
+def two(numbers: list) -> int:
+    return calculate_rating(numbers, 1) * calculate_rating(numbers, 0)
 
 
-if __name__ == "__main__":
-    rows = _parse_input_to_rows("03_example.txt")
-    print(f"rows: {rows}")
+if __name__ == '__main__':
+    rows = _parse_input_to_rows('03_input.txt')
 
     for part in [one, two]:
-        print(f"Part {part.__name__}: {part(rows)}")
+        print(f'Part {part.__name__}: {part(rows)}')
