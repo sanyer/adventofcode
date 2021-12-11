@@ -9,6 +9,7 @@ def _parse_input_to_rows(input_filename: str) -> list:
 
 
 def flash(rows: list, base_pos: int, flash_count: int) -> list:
+    flash_count += 1
     rows[base_pos[0]][base_pos[1]] = 0
     directions = [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]
     for direction in directions:
@@ -16,10 +17,6 @@ def flash(rows: list, base_pos: int, flash_count: int) -> list:
             posx, posy = base_pos[0] + direction[0], base_pos[1] + direction[1]
             if not rows[posx][posy] == 0:
                 rows[posx][posy] += 1
-            if not rows[posx][posy] == 0 and rows[posx][posy] > 9:
-                flash_count += 1
-                rows[posx][posy] = 0
-                rows, flash_count = flash(rows, [posx, posy], flash_count)
         except IndexError:
             pass
     return rows, flash_count
@@ -30,12 +27,18 @@ def step(rows: list, flash_count: int) -> list:
     for i, row in enumerate(rows):
         for j, _ in enumerate(row):
             rows[i][j] += 1
+            if rows[i][j] > 9:  # flash
+                flash_exists = True
 
     # phase 2
-    for i, row in enumerate(rows):
-        for j, _ in enumerate(row):
-            if rows[i][j] > 9:  # flash
-                rows, flash_count = flash(rows, [i, j], flash_count)
+    flash_exists = True
+    while flash_exists:
+        flash_exists = False
+        for i, row in enumerate(rows):
+            for j, cell in enumerate(row):
+                if cell > 9:  # flash
+                    flash_exists = True
+                    rows, flash_count = flash(rows, [i, j], flash_count)
 
     pprint(rows)
     return rows, flash_count
