@@ -1,6 +1,5 @@
 # https://adventofcode.com/2021/day/11
 
-from pprint import pprint
 
 def _parse_input_to_rows(input_filename: str) -> list:
     with open(input_filename, "r") as fp:
@@ -8,46 +7,43 @@ def _parse_input_to_rows(input_filename: str) -> list:
     return [[int(number) for number in line] for line in lines]
 
 
-def flash(rows: list, base_pos: int, flash_count: int) -> list:
+def flash(flash_table: list, base_pos: int, flash_count: int) -> list:
     flash_count += 1
-    rows[base_pos[0]][base_pos[1]] = 0
     directions = [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]
     for direction in directions:
         try:
             posx, posy = base_pos[0] + direction[0], base_pos[1] + direction[1]
-            if not rows[posx][posy] == 0:
-                rows[posx][posy] += 1
+            if posx < 0 or posy < 0 or flash_table[posx][posy] == 0:
+                raise IndexError
+            flash_table[posx][posy] += 1
         except IndexError:
             pass
-    return rows, flash_count
+    flash_table[base_pos[0]][base_pos[1]] = 0
+    return flash_table, flash_count
 
 
-def step(rows: list, flash_count: int) -> list:
-    # phase 1
-    for i, row in enumerate(rows):
+def step(temp_table: list, flash_count: int) -> list:
+    flash_exists = False
+    for i, row in enumerate(temp_table):
         for j, _ in enumerate(row):
-            rows[i][j] += 1
-            if rows[i][j] > 9:  # flash
+            temp_table[i][j] += 1
+            if temp_table[i][j] > 9:  # flash
                 flash_exists = True
 
-    # phase 2
-    flash_exists = True
     while flash_exists:
         flash_exists = False
-        for i, row in enumerate(rows):
-            for j, cell in enumerate(row):
-                if cell > 9:  # flash
+        for i, row in enumerate(temp_table):
+            for j, _ in enumerate(row):
+                if temp_table[i][j] > 9:  # flash
                     flash_exists = True
-                    rows, flash_count = flash(rows, [i, j], flash_count)
-
-    pprint(rows)
-    return rows, flash_count
+                    temp_table, flash_count = flash(temp_table, [i, j], flash_count)
+    return temp_table, flash_count
 
 
-def one(octopuses: list) -> list:
+def one(one_input: list) -> list:
     flash_count = 0
-    for _ in range(2):
-        octopuses, flash_count = step(octopuses, flash_count)
+    for _ in range(100):
+        one_input, flash_count = step(one_input, flash_count)
     return flash_count
 
 
@@ -56,7 +52,5 @@ def two(octopuses: list) -> list:
 
 
 if __name__ == '__main__':
-    rows = _parse_input_to_rows('11_example.txt')
-
     for part in [one, two]:
-        print(f'Part {part.__name__}: {part(rows)}')
+        print(f'Part {part.__name__}: {part(_parse_input_to_rows("11_input.txt"))}')
