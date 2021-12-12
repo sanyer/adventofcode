@@ -52,10 +52,10 @@ def two(two_input: list) -> list:
     all_flash_step = 0
     while not all_flash:
         two_input, _ = step(two_input, 0)
+        all_flash_step += 1
         row_sum  = sum([sum(row) for row in two_input])
         if row_sum == 0:
             all_flash = True
-        all_flash_step += 1
     return all_flash_step
 
 
